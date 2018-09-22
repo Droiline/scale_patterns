@@ -1,49 +1,36 @@
-#
 import numpy as np
-import mask
 
-def scalify(input, m_size):
+def scalify(input, mask):
     input = np.array(input)
 
-    if m_size == 8:
-        lines = mask.lines8
-        fill = mask.fill8
-    else:
-        lines = mask.lines16
-        fill = mask.fill16
+    # The output is the size of the input * the size of the masks. The scales
+    # interleave heightwise, so only half the height is needed. An extra scale is
+    # added on the side to deal with the edge scales, and then taken off before returning.
+    output = np.tile(mask.lines, (int(input.shape[0]/2)+1, input.shape[1]+1))
 
-    output = np.tile(lines, (int(input.shape[0]/2)+1, input.shape[1]))
-    out_i = 0
-    for i in range(0, input.shape[0], 2):
-        out_j = 0
-        for j in range(input.shape[1]):
-            if input[i,j]:
-                output[out_i:out_i+m_size, out_j:out_j+m_size] += fill
-            out_j += m_size
-        out_i += m_size
-
-    out_i = int(m_size/2)
-    for i in range(1, input.shape[0], 2):
-        out_j = int(m_size/2)
-        for j in range(input.shape[1]-1):
-            if input[i,j]:
-                output[out_i:out_i+m_size, out_j:out_j+m_size] += fill
-            out_j += m_size
-        out_i += m_size
+    # The centres of the scales are offset from those on the line above and below
+    # by half a scale's width. The offset variable will be added to the starting
+    # position and negated at the end of each row.
+    offset = -int(mask.lines.shape[1]/2)
+    out_y = 0
+    init_x = 0
+    for y in range(input.shape[0]):
+        out_x = init_x
+        for x in range(input.shape[1]):
+            if input[y,x]:
+                output[out_y:out_y+mask.shape[0], out_x:out_x+mask.shape[1]] += mask.fill
+            out_x += mask.shape[1]
+        out_y += int(mask.shape[0]/2)
+        offset *= -1
+        init_x += offset
 
     # EDGE CASE TIME
     j = input.shape[0]-1
-    out_j = j * m_size + int(m_size/2)
-    print('out_j ', out_j)
-    out_i = int(m_size/2)
-    print('out_i ', out_i)
+    out_j = j * mask.shape[1] + int(mask.shape[1]/2)
+    out_i = int(mask.shape[1]/2)
     for i in range(1, input.shape[1],2):
-        print('input[', i, ', ', j, ']: ', input[i,j])
         if input[i,j]:
-            print('Edge case detected')
-            output[out_i:out_i+m_size, out_j:out_j+int(m_size/2)] += fill[:, 0:int(m_size/2)]
-            output[out_i:out_i+m_size, 0:int(m_size/2)] += fill[:, int(m_size/2):]
-        out_i += m_size
-        print('out_i ', out_i)
+            output[out_i:out_i+mask.shape[1], 0:int(mask.shape[1]/2)] += mask.fill[:, int(mask.shape[1]/2):]
+        out_i += mask.shape[1]
 
-    return output
+    return output[:,:-mask.shape[1]]
