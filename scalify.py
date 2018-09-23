@@ -25,12 +25,12 @@ def scalify(input, mask):
         init_x += offset
 
     # EDGE CASE TIME
-    j = input.shape[0]-1
-    out_j = j * mask.shape[1] + int(mask.shape[1]/2)
-    out_i = int(mask.shape[1]/2)
-    for i in range(1, input.shape[1],2):
-        if input[i,j]:
-            output[out_i:out_i+mask.shape[1], 0:int(mask.shape[1]/2)] += mask.fill[:, int(mask.shape[1]/2):]
-        out_i += mask.shape[1]
+    x = input.shape[1]-1
+    out_x = x * mask.shape[1] + int(mask.shape[1]/2)
+    out_y = int(mask.shape[1]/2)
+    for y in range(1, input.shape[0],2):
+        if input[y,x]:
+            output[out_y:out_y+mask.shape[1], 0:int(mask.shape[1]/2)] += mask.fill[:, int(mask.shape[1]/2):]
+        out_y += mask.shape[1]
 
     return output[:,:-mask.shape[1]]
