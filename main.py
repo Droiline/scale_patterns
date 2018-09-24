@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import timeit
 
 from pattern import pattern_gen
 import scalify
@@ -12,13 +13,16 @@ from mask import sml_mask, med_mask
 #                   [1,1,1,0,1,1,1,0,1],
 #                   [0,0,0,0,0,0,0,0,0]])
 
-dims = (25, 25)
+dims = (40, 50)
+#dims = (6,8)
 
-input = pattern_gen(dims)
+input = pattern_gen(dims, iter_n=20)
+
 output = scalify.scalify(input, med_mask)
 
 fig, ax = plt.subplots()
 im = ax.pcolormesh(output, cmap='YlOrBr')
+ax.axis('off')
 
 plt.axis('equal')
 plt.show()

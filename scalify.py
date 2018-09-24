@@ -24,7 +24,7 @@ def scalify(input, mask):
         offset *= -1
         init_x += offset
 
-    # EDGE CASE TIME
+    # Edge Cases
     x = input.shape[1]-1
     out_x = x * mask.shape[1] + int(mask.shape[1]/2)
     out_y = int(mask.shape[1]/2)
