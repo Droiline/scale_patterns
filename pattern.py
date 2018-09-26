@@ -26,15 +26,15 @@ def pattern_gen(shape, iter_n=2, stoc=0.1, ar=2, ir=4):
         # Copy the horizontal boundaries into the padding, this will make the array wrap
         back[:,:ir] = back[:,-2*ir:-ir]
         back[:,-ir:] = back[:,ir:2*ir]
-        for y in range(ir, shape[0]+ir):
-            for x in range(ir, shape[1]+ir):
-                ad = (np.sum(back[y-1:y+1, x-2*osc]) +
-                      np.sum(back[y-2:y+2, x-1:x+1]) +
+        for y in range(ir-1, shape[0]+ir):
+            for x in range(ir-1, shape[1]+ir):
+                ad = (np.sum(back[y-1:y+2, x-2*osc]) +
+                      np.sum(back[y-2:y+3, x-1:x+2]) +
                              back[y, x+2*osc])
-                id = (np.sum(back[y-1:y+1, x-4*osc]) +
-                      np.sum(back[y-3:y+3, x-3*osc]) +
-                      np.sum(back[y-4:y+4, x-2:x+2]) +
-                      np.sum(back[y-2:y+2, x+3*osc]) +
+                id = (np.sum(back[y-1:y+2, x-4*osc]) +
+                      np.sum(back[y-3:y+4, x-3*osc]) +
+                      np.sum(back[y-4:y+5, x-2:x+3]) +
+                      np.sum(back[y-2:y+3, x+3*osc]) +
                              back[y, x+4*osc])
                 # print(ad, inhib_c[x-ir], id)
                 if ad - inhib_c[x-ir]*id > 0:

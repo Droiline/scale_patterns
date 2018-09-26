@@ -13,7 +13,7 @@ from mask import sml_mask, med_mask
 #                   [1,1,1,0,1,1,1,0,1],
 #                   [0,0,0,0,0,0,0,0,0]])
 
-dims = (40, 50)
+dims = (80,50)
 #dims = (6,8)
 
 input = pattern_gen(dims, iter_n=20)
