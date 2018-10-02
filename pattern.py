@@ -30,22 +30,37 @@ def sum_neighbours(nbhood, osc):
         x -= 1
     return sum
 
-def pattern_gen(shape, iter_n=2, stoc=0.1, ar=2, ir=4):
+def pattern_gen(shape, iter_n=2, ar=2, ir=4):
     # Generate list of numbers between 0 and 1 that follow a cosine curve. Use these
     # as inhibitor concentration values.
-    harms = [1]
-    # harms = [1, -0.19, -0.105, 0.045]
+    # harms = [1]
+    harms = [1, -0.19, -0.105, 0.045]
     # harms = [1, -0.315, -0.055, 0.055]
-    # inhib_c = [(compound_cosine(x, shape, 0.2, harms)+1)/5 for x in range(shape[1])]
+    cos = [compound_cosine(x, shape, -1, harms) for x in range(shape[1])]
     # inhib values from 0.23 - 0.45 are good
-    inhib_c = [0.3]*shape[1]
+    inhib_min = 0.25
+    inhib_max = 0.60
+    inhib_c = [(((x-min(cos)) * (inhib_max-inhib_min)) / (max(cos)-min(cos)) + inhib_min) for x in cos]
+    # inhib_c = [0.3]*shape[1]
     print(inhib_c)
     # Use init_probs to generate the initial scale states
     #output = [np.array([r.choices([1,0], cum_weights=[prob,1], k=shape[0]) for prob in init_probs]).transpose())]
     # Pad out the array by the inhibitor radius on all sides
     back = np.zeros((shape[0]+2*ir, shape[1]+2*ir))
     front = np.zeros((shape[0]+2*ir, shape[1]+2*ir))
-    front[ir:-ir,ir:-ir] = np.array([r.choices([1,0], cum_weights=[prob,1], k=shape[0]) for prob in inhib_c]).transpose()
+
+    # Starting values according to inhib_c levels
+    # front[ir:-ir,ir:-ir] = np.array([r.choices([1,0], cum_weights=[prob,1], k=shape[0]) for prob in inhib_c]).transpose()
+
+    # Starting values randomised 50:50
+    front[ir:-ir, ir:-ir] = np.random.randint(2, size=shape)
+
+    # Regular starting values
+    # n_tiles = 10
+    # tile = np.zeros((shape[0]//n_tiles,shape[1]//n_tiles))
+    # tile[tile.shape[0]//2,tile.shape[1]//2] = 1
+    # front[ir:-ir, ir:-ir] = np.tile(tile, (n_tiles,n_tiles))
+
     # The oscillator. Used to mirror the adding patterns on odd lines.
     osc = 1
     output = [0]*iter_n
