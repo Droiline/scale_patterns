@@ -39,7 +39,7 @@ def pattern_gen(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
     # inhib_max = 0.6
     # good for ar=1, ir=2, stripes=6
     inhib_min = 0.3
-    inhib_max = 0.4
+    inhib_max = 0.6
     # good for ar=1, ir=3
     # inhib_min = 0.15
     # inhib_max = 0.4
@@ -84,18 +84,10 @@ def pattern_gen(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
             for x in range(ir, shape[1]+ir):
                 ad = sum_neighbours(back[y-ar:y+ar+1, x-ar:x+ar+1], osc)
                 id = sum_neighbours(back[y-ir:y+ir+1, x-ir:x+ir+1], osc)
-                # print(ad, inhib_c[x-ir], id)
-                if ad > inhib_c[y-ir, x-ir]*id:
-                    # print("0")
-                    front[y,x] = 1
-                elif ad < inhib_c[y-ir, x-ir]*id:
-                    # print("1")
-                    front[y,x] = 0
-                else:
-                    # print("stay")
-                    front[y,x] = back[y,x].copy()
+                front[y,x] = ad - inhib_c[y-ir, x-ir]*id
             osc *= -1
         output[i] = front[ir:-ir,ir:-ir].copy()
+        print(output[1])
 
     # output[0] = np.array([r.choices([1,0], cum_weights=[prob,1], k=shape[0]) for prob in inhib_c]).transpose()
     return output

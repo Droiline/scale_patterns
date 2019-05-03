@@ -10,14 +10,15 @@ from pattern import pattern_gen
 from scalify import scalify
 from mask import sml_mask, med_mask
 
-show_all_iters = False
+iters = 9
+show_all_iters = True
 dims = (40, 36)
 # dims = (80,50)
 # dims = (15,15)
 
-kwargs = {'iter_n': 6,
+kwargs = {'iter_n': iters,
           'ar': 1,
-          'ir':2,
+          'ir': 2,
           'x_sub_harms': [-0.48, -0.225, -0.5],
           'y_sub_harms': []}
 
@@ -31,6 +32,7 @@ if show_all_iters:
 
     for i in range(iters):
         scales = scalify(pattern[i], sml_mask)
+        # print(scales)
         col = i//cols
         row = i%cols
         ax[col,row].pcolormesh(scales, cmap='YlOrBr')

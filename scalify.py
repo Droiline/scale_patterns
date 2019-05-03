@@ -1,7 +1,14 @@
 import numpy as np
 
+def threshold(input):
+    """Everything below 0 is 0, everything above 0 is 1"""
+    for row in input:
+        for item in row:
+            item = 1 if item < 0 else 0
+
 def scalify(input, mask):
     input = np.array(input)
+    threshold(input)
 
     # The output is the size of the input * the size of the masks. The scales
     # interleave heightwise, so only half the height is needed. An extra scale is
