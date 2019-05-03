@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np
 import math as m
 import matplotlib
@@ -8,18 +10,18 @@ from pattern import pattern_gen
 from scalify import scalify
 from mask import sml_mask, med_mask
 
-# input = np.array([[0,0,0,0,0,0,0,0,0],
-#                   [0,1,1,0,0,1,1,0,0],
-#                   [0,1,0,1,1,1,0,1,1],
-#                   [1,1,1,0,1,1,1,0,1],
-#                   [0,0,0,0,0,0,0,0,0]])
-
-iters = 14
 show_all_iters = False
-dims = (80,50)
+dims = (40, 36)
+# dims = (80,50)
 # dims = (15,15)
 
-pattern = pattern_gen(dims, iter_n=iters, ar=1, ir=2)
+kwargs = {'iter_n': 6,
+          'ar': 1,
+          'ir':2,
+          'x_sub_harms': [-0.48, -0.225, -0.5],
+          'y_sub_harms': []}
+
+pattern = pattern_gen(dims, **kwargs)
 
 if show_all_iters:
     cols = m.ceil(m.sqrt(iters))
@@ -28,7 +30,7 @@ if show_all_iters:
     fig.tight_layout()
 
     for i in range(iters):
-        scales = scalify(pattern[i], med_mask)
+        scales = scalify(pattern[i], sml_mask)
         col = i//cols
         row = i%cols
         ax[col,row].pcolormesh(scales, cmap='YlOrBr')

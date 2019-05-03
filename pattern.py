@@ -30,19 +30,34 @@ def sum_neighbours(nbhood, osc):
         x -= 1
     return sum
 
-def pattern_gen(shape, iter_n=2, ar=2, ir=4):
+def pattern_gen(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
     # Generate list of numbers between 0 and 1 that follow a cosine curve. Use these
     # as inhibitor concentration values.
-    # harms = [1]
-    harms = [1, -0.19, -0.105, 0.045]
-    # harms = [1, -0.315, -0.055, 0.055]
-    cos = [compound_cosine(x, shape, -1, harms) for x in range(shape[1])]
-    # inhib values from 0.23 - 0.45 are good
-    inhib_min = 0.25
-    inhib_max = 0.60
-    inhib_c = [(((x-min(cos)) * (inhib_max-inhib_min)) / (max(cos)-min(cos)) + inhib_min) for x in cos]
+    cos = [compound_cosine(x, shape, -1, x_sub_harms) for x in range(shape[1])]
+    # good for ar=1, ir=2
+    # inhib_min = 0.3
+    # inhib_max = 0.6
+    # good for ar=1, ir=2, stripes=6
+    inhib_min = 0.3
+    inhib_max = 0.4
+    # good for ar=1, ir=3
+    # inhib_min = 0.15
+    # inhib_max = 0.4
+    # good for ar=2, ir=4
+    # inhib_min = 0.27
+    # inhib_max = 0.4
+    # good for ar=1, ir=4
+    # inhib_min = 0.1
+    # inhib_max = 0.2
+
+    inhib_c = np.zeros(shape)
+    inhib_c[:] = [(((x-min(cos)) * (inhib_max-inhib_min)) / (max(cos)-min(cos)) + inhib_min) for x in cos]
+    inhib_cy = [compound_cosine(x, shape, 1, y_sub_harms) for x in range(shape[0])]
+    for y in range(inhib_c.shape[0]):
+        inhib_c[y] += inhib_cy[y]
+
+    # inhib_c = [(inhib_min+inhib_min)/2] * shape[1]
     # inhib_c = [0.3]*shape[1]
-    print(inhib_c)
     # Use init_probs to generate the initial scale states
     #output = [np.array([r.choices([1,0], cum_weights=[prob,1], k=shape[0]) for prob in init_probs]).transpose())]
     # Pad out the array by the inhibitor radius on all sides
@@ -54,12 +69,6 @@ def pattern_gen(shape, iter_n=2, ar=2, ir=4):
 
     # Starting values randomised 50:50
     front[ir:-ir, ir:-ir] = np.random.randint(2, size=shape)
-
-    # Regular starting values
-    # n_tiles = 10
-    # tile = np.zeros((shape[0]//n_tiles,shape[1]//n_tiles))
-    # tile[tile.shape[0]//2,tile.shape[1]//2] = 1
-    # front[ir:-ir, ir:-ir] = np.tile(tile, (n_tiles,n_tiles))
 
     # The oscillator. Used to mirror the adding patterns on odd lines.
     osc = 1
@@ -76,10 +85,10 @@ def pattern_gen(shape, iter_n=2, ar=2, ir=4):
                 ad = sum_neighbours(back[y-ar:y+ar+1, x-ar:x+ar+1], osc)
                 id = sum_neighbours(back[y-ir:y+ir+1, x-ir:x+ir+1], osc)
                 # print(ad, inhib_c[x-ir], id)
-                if ad - inhib_c[x-ir]*id > 0:
+                if ad > inhib_c[y-ir, x-ir]*id:
                     # print("0")
                     front[y,x] = 1
-                elif ad - inhib_c[x-ir]*id < 0:
+                elif ad < inhib_c[y-ir, x-ir]*id:
                     # print("1")
                     front[y,x] = 0
                 else:
