@@ -30,7 +30,7 @@ def sum_neighbours(nbhood, osc):
         x -= 1
     return sum
 
-def pattern_gen(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
+def ah_with_substrate(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
     # Generate list of numbers between 0 and 1 that follow a cosine curve. Use these
     # as inhibitor concentration values.
     cos = [compound_cosine(x, shape, -1, x_sub_harms) for x in range(shape[1])]

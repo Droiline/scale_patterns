@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 #import timeit
 
-from pattern import pattern_gen
+from pattern import ah_with_substrate
 from scalify import scalify
 from mask import sml_mask, med_mask
 
@@ -15,13 +15,14 @@ dims = (40, 36)
 # dims = (80,50)
 # dims = (15,15)
 
-kwargs = {'iter_n': 6,
+iters = 9
+kwargs = {'iter_n': iters,
           'ar': 1,
           'ir':2,
           'x_sub_harms': [-0.48, -0.225, -0.5],
           'y_sub_harms': []}
 
-pattern = pattern_gen(dims, **kwargs)
+pattern = ah_with_substrate(dims, **kwargs)
 
 if show_all_iters:
     cols = m.ceil(m.sqrt(iters))
