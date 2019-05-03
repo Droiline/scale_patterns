@@ -1,12 +1,17 @@
+# Anna Ruth Rowan 2019
+
 import numpy as np
 import math as m
 import random as r
 
+
 def init_even(x, shape):
     return m.cos(x*2*m.pi/(shape[1]-1))
 
+
 def init_wideback(x, shape):
     return 0.96*(m.cos(x*2*m.pi/(shape[1]-1))-0.19*m.cos(x*4*m.pi/(shape[1]-1))-0.105*m.cos(x*6*m.pi/(shape[1]-1))-0.045*m.cos(x*8*m.pi/(shape[1]-1)))
+
 
 def compound_cosine(x, shape, amplitude, harmonics):
     compound = 0
@@ -15,8 +20,9 @@ def compound_cosine(x, shape, amplitude, harmonics):
 
     return amplitude*compound
 
-# Calculates the sum of the diamond neighbours from the square slice given
+
 def sum_neighbours(nbhood, osc):
+    """The sum of the hexagonal neighbours from the square slice given"""
     r = nbhood.shape[0]//2
     x = -r
     sum = 0
@@ -30,7 +36,57 @@ def sum_neighbours(nbhood, osc):
         x -= 1
     return sum
 
-def ah_with_substrate(shape, iter_n=2, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
+
+def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
+    """ Simple two dimentional cellular automaton
+
+        Args:
+            shape (tuple): Size of the output generated
+            iter_n (int): Number of iterations
+            rad (int): Radius of each cell's neighbourhood
+            threshold (int): Number of neighbours to ensure life
+
+        Returns:
+            array(numpy.array): An array of 2d matrices containing
+                                the generated patterns at each stage
+    """
+
+    output = [0] * iter_n
+    # Leave space for a border - we will need them to make summing neighbours easy
+    back = np.zeros((shape[0]+2*rad, shape[1]+2*rad))
+    front = np.zeros((shape[0]+2*rad, shape[1]+2*rad))
+
+    # Random initial conditions
+    front[rad:-rad, rad:-rad] = np.random.randint(2, size=shape)
+
+    # The oscillator. Used to mirror the adding patterns on odd lines.
+    osc = 1
+    output = [0]*iter_n
+    output[0] = front[rad:-rad, rad:-rad].copy()
+
+    for i in range(1, iter_n):
+        back = front.copy()
+        # Copy the horizontal boundaries into the padding, this will make the array wrap
+        back[:, :rad] = back[:, -2*rad:-rad].copy()
+        back[:, -rad:] = back[:, rad:2*rad].copy()
+
+        for y in range(rad, shape[0] + rad):
+            for x in range(rad, shape[1] + rad):
+                live_neighbours = sum_neighbours(back[y-rad:y+rad+1, x-rad:x+rad+1], osc)
+                if live_neighbours > lower and live_neighbours < upper:
+                    front[y, x] = 1
+                elif live_neighbours < lower or live_neighbours > upper:
+                    front[y, x] = 0
+                else:
+                    front[y, x] = back[y, x]
+
+            osc *= -1
+        output[i] = front[rad:-rad, rad:-rad].copy()
+
+    return output
+
+
+def ah_with_substrate(shape, iter_n, ar=2, ir=4, x_sub_harms=[1], y_sub_harms=[]):
     # Generate list of numbers between 0 and 1 that follow a cosine curve. Use these
     # as inhibitor concentration values.
     cos = [compound_cosine(x, shape, -1, x_sub_harms) for x in range(shape[1])]

@@ -6,23 +6,24 @@ import matplotlib
 import matplotlib.pyplot as plt
 #import timeit
 
-from pattern import ah_with_substrate
+from pattern import cell_automaton as gen_pattern
 from scalify import scalify
 from mask import sml_mask, med_mask
 
-show_all_iters = False
+show_all_iters = True
 dims = (40, 36)
-# dims = (80,50)
-# dims = (15,15)
+iters = 16
 
-iters = 9
-kwargs = {'iter_n': iters,
-          'ar': 1,
-          'ir':2,
-          'x_sub_harms': [-0.48, -0.225, -0.5],
-          'y_sub_harms': []}
+# ah_args = {'ar': 1,
+#            'ir':2,
+#            'x_sub_harms': [-0.48, -0.225, -0.5],
+#            'y_sub_harms': []}
 
-pattern = ah_with_substrate(dims, **kwargs)
+ca_args = {'rad': 2,
+           'lower': 6,
+           'upper': 12}
+pattern = gen_pattern(dims, iters, **ca_args)
+
 
 if show_all_iters:
     cols = m.ceil(m.sqrt(iters))
