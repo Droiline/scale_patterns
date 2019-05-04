@@ -44,7 +44,8 @@ def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
             shape (tuple): Size of the output generated
             iter_n (int): Number of iterations
             rad (int): Radius of each cell's neighbourhood
-            threshold (int): Number of neighbours to ensure life
+            lower (int): Lower bound of active neighbours
+            upper (int): Upper bound of active neighbours
 
         Returns:
             array(numpy.array): An array of 2d matrices containing
@@ -66,9 +67,11 @@ def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
 
     for i in range(1, iter_n):
         back = front.copy()
-        # Copy the horizontal boundaries into the padding, this will make the array wrap
+        # Copy the boundaries into the padding, this will make the array wrap
         back[:, :rad] = back[:, -2*rad:-rad].copy()
         back[:, -rad:] = back[:, rad:2*rad].copy()
+        back[:rad, :] = back[-2*rad:-rad, :].copy()
+        back[-rad:, :] = back[rad:2*rad, :].copy()
 
         for y in range(rad, shape[0] + rad):
             for x in range(rad, shape[1] + rad):
