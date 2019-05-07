@@ -33,7 +33,7 @@ if run_type == 'ca':
     for y, lower in enumerate(lowers):
         for x, upper in enumerate(uppers):
             if lower <= upper:
-                pattern = cell_automaton(dims, iters, radius, lower, upper)[-1]
+                pattern = cell_automaton(dims, iters, radius, lower, upper, stoc)[-1]
                 scales = scalify(pattern, sml_mask)
 
                 ax[y, x].pcolormesh(scales, cmap='YlOrBr')

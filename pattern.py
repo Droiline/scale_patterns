@@ -37,7 +37,7 @@ def sum_neighbours(nbhood, osc):
     return sum
 
 
-def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
+def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12, stoc=0.1):
     """ Simple two dimentional cellular automaton
 
         Args:
@@ -46,6 +46,7 @@ def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
             rad (int): Radius of each cell's neighbourhood
             lower (int): Lower bound of active neighbours
             upper (int): Upper bound of active neighbours
+            stoc (float): Stocasticity
 
         Returns:
             array(numpy.array): An array of 2d matrices containing
@@ -82,6 +83,8 @@ def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12):
                     front[y, x] = 0
                 else:
                     front[y, x] = back[y, x]
+
+                front[y, x] = front[y, x] * r.choices([-1, 1], [stoc, 1 - stoc])[0]
 
             osc *= -1
         output[i] = front[rad:-rad, rad:-rad].copy()
