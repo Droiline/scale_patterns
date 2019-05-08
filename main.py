@@ -20,27 +20,48 @@ if run_type == 'ca':
     # 1: 6
     # 2: 18
     # 3: 36
-    radius = 1
-    lowers = list(range(6))
-    uppers = list(range(6))
-    # radius = 2
-    # lowers = list(range(0, 18, 2))
-    # uppers = list(range(0, 18, 2))
+    stoc = 0.0
+    # radius = 1
+    # lower = 1
+    # upper = 4
+    # lowers = list(range(6))
+    # uppers = list(range(6))
+    radius = 2
+    lower = 8
+    upper = 16
+    lowers = list(range(0, 12, 2))
+    uppers = list(range(6, 18, 2))
 
-    fig, ax = plt.subplots(len(lowers), len(uppers))
-    fig.tight_layout
+    if show_all_iters:
+        # use lower and upper, now lowers and uppers
+        pattern = cell_automaton(dims, iters, radius, lower, upper, stoc)
 
-    for y, lower in enumerate(lowers):
-        for x, upper in enumerate(uppers):
-            if lower <= upper:
-                pattern = cell_automaton(dims, iters, radius, lower, upper, stoc)[-1]
-                scales = scalify(pattern, sml_mask)
+        cols = m.ceil(m.sqrt(iters))
+        rows = m.ceil(iters/cols)
+        fig, ax = plt.subplots(rows, cols)
 
-                ax[y, x].pcolormesh(scales, cmap='YlOrBr')
-                ax[y, x].axis('off')
-                ax[y, x].axis('equal')
-                ax[y, x].set_title('lower: '+str(lower)+', upper: '+str(upper))
+        for i in range(iters):
+            scales = scalify(pattern[i], sml_mask)
+            col = i//cols
+            row = i%cols
+            ax[col,row].pcolormesh(scales, cmap='YlOrBr')
+            ax[col,row].axis('off')
+            ax[col,row].axis('equal')
+            ax[col,row].set_title(i)
+    else:
+        fig, ax = plt.subplots(len(lowers), len(uppers))
+        fig.tight_layout
 
+        for y, lower in enumerate(lowers):
+            for x, upper in enumerate(uppers):
+                if lower <= upper:
+                    pattern = cell_automaton(dims, iters, radius, lower, upper, stoc)[-1]
+                    scales = scalify(pattern, sml_mask)
+
+                    ax[y, x].pcolormesh(scales, cmap='YlOrBr')
+                    ax[y, x].axis('off')
+                    ax[y, x].axis('equal')
+                    ax[y, x].set_title('lower: '+str(lower)+', upper: '+str(upper))
 
 elif run_type == 'ah':
     ah_args = {'ar': 1,

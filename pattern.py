@@ -37,7 +37,7 @@ def sum_neighbours(nbhood, osc):
     return sum
 
 
-def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12, stoc=0.1):
+def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12, stoc=0.0):
     """ Simple two dimentional cellular automaton
 
         Args:
@@ -84,6 +84,7 @@ def cell_automaton(shape, iter_n, rad=2, lower=5, upper=12, stoc=0.1):
                 else:
                     front[y, x] = back[y, x]
 
+                # Apply randomness. stoc chance of the normal thing not happening
                 front[y, x] = front[y, x] * r.choices([-1, 1], [stoc, 1 - stoc])[0]
 
             osc *= -1
